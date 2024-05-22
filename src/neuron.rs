@@ -1,13 +1,22 @@
-use ndarray::Array2;
+use ndarray::{arr1, Array1};
 
 pub struct Neuron {
-    pub weights: Array2<f32>,
-    pub bias: f32,
+    weights: Array1<f32>,
+    bias: f32,
+}
+
+impl Default for Neuron {
+    fn default() -> Self {
+        Neuron {
+            weights: arr1(&[0.5, 0.5]),
+            bias: 0.5,
+        }
+    }
 }
 
 impl Neuron {
-    fn forward(&self, inputs: &Array2<f32>) -> Array2<f32> {
+    fn forward(&self, inputs: &Array1<f32>) -> f32 {
         // Return inputs*weights + bias
-        return inputs.dot(&self.weights) + self.bias;
+        return self.weights.dot(inputs) + self.bias;
     }
 }
