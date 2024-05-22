@@ -6,10 +6,7 @@ use ::ndarray::arr2;
 
 use std::io;
 fn main() {
-    let mut neuron = Neuron {
-        weights: arr2(&[[0.0, 1.0]]),
-        bias: 0.5,
-    };
+    let mut neuron = Neuron::default();
 }
 
 fn get_input_size() -> u32 {
