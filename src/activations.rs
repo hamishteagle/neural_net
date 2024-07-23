@@ -1,3 +1,5 @@
+use ndarray::Array1;
+
 #[derive(Clone, Debug)]
 pub enum Activation {
     Sigmoid,
@@ -14,6 +16,11 @@ impl Activation {
             Activation::Sigmoid => Sigmoid.deriv(x),
         }
     }
+    pub fn inverse(&self, x: &f32) -> f32 {
+        match self {
+            Activation::Sigmoid => Sigmoid.inverse(x),
+        }
+    }
 }
 pub struct Sigmoid;
 
@@ -22,6 +29,9 @@ impl Sigmoid {
         return 1.0 / (1.0 + (-x).exp());
     }
     fn deriv(&self, x: &f32) -> f32 {
-        return x * (1.0 - x);
+        return self.call(x) * (1.0 - self.call(x));
+    }
+    fn inverse(&self, x: &f32) -> f32 {
+        return (x / (1.0 - x)).ln();
     }
 }
