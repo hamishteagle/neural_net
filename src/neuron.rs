@@ -21,8 +21,6 @@ impl Default for Neuron {
 impl Neuron {
     pub fn forward(&self, inputs: &Array1<f32>) -> f32 {
         // Return inputs*weights + bias
-        println!("inputs: {}", inputs);
-        println!("weights: {}", self.weights);
         let w_b = self.weights.dot(inputs) + self.bias;
         return self.activation.call(&w_b);
     }
