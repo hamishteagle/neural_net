@@ -1,12 +1,17 @@
 //use crate::Neuron;
 
+mod activations;
+mod loss;
+mod network;
 mod neuron;
 use crate::neuron::Neuron;
-use ::ndarray::arr2;
+mod layer;
+mod linalg_util;
+use ndarray::arr2;
 
 use std::io;
 fn main() {
-    let mut neuron = Neuron::default();
+    let input_size = get_input_size();
 }
 
 fn get_input_size() -> u32 {
