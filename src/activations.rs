@@ -1,3 +1,4 @@
+use approx_eq::assert_approx_eq;
 use ndarray::Array1;
 
 #[derive(Clone, Debug)]
@@ -34,4 +35,10 @@ impl Sigmoid {
     fn inverse(&self, x: &f32) -> f32 {
         return (x / (1.0 - x)).ln();
     }
+}
+
+
+#[test]
+fn test_deriv_sigmoid(){
+    assert_approx_eq!(Sigmoid.deriv(&3.0).into(), 0.04518, 1e-4);
 }
