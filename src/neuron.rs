@@ -1,5 +1,6 @@
 use crate::activations::Activation;
 use ndarray::{arr1, Array1};
+use rand::Rng;
 
 #[derive(Clone, Debug)]
 pub struct Neuron {
@@ -10,10 +11,13 @@ pub struct Neuron {
 
 impl Default for Neuron {
     fn default() -> Self {
+        let mut rng = rand::thread_rng();
+        let weights = arr1(&[rng.gen_range(-1.0..1.0), rng.gen_range(-1.0..1.0)]);
+        let bias = rng.gen_range(-1.0..1.0);
         Neuron {
             activation: Activation::Sigmoid,
-            weights: arr1(&[0.0, 1.0]),
-            bias: 4.0,
+            weights: weights,
+            bias: bias,
         }
     }
 }

@@ -1,10 +1,12 @@
+use crate::layer::Intermediary;
+use ndarray::{arr1, Array1, Axis, Array2, s};
+use approx_eq::assert_approx_eq;
+
 use crate::loss::Loss;
 use crate::neuron::Neuron;
-use crate::{activations::Activation::Sigmoid, neuron};
-use crate::layer::Intermediary;
-use approx_eq::assert_approx_eq;
+use crate::activations::Activation::Sigmoid;
 use crate::linalg_util::outer;
-use ndarray::{arr1, Array1, Axis, Array2, s};
+
 
 #[derive(Debug)]
 pub struct Network {
@@ -23,21 +25,14 @@ impl Network {
         output_size: usize,
         learning_rate: f32,
     ) -> Network {
+        let mut rng = rand::thread_rng();
         //TODO: do something with input size
         let hidden_layer = vec![
-            Neuron {
-                activation: Sigmoid,
-                weights: arr1(&[1.0, 1.0]),
-                bias: 0.0
-            };
+            Neuron::default();
             hidden_size
         ];
         let output_layer = vec![
-            Neuron {
-                activation: Sigmoid,
-                weights: arr1(&[1.0, 1.0]),
-                bias: 0.0
-            };
+            Neuron::default();
             output_size
         ];
 
