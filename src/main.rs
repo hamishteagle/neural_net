@@ -1,5 +1,3 @@
-//use crate::Neuron;
-
 mod activations;
 mod loss;
 mod network;

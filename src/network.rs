@@ -1,10 +1,10 @@
 use crate::loss::Loss;
-use crate::Neuron;
+use crate::neuron::Neuron;
 use crate::{activations::Activation::Sigmoid, neuron};
 use crate::layer::Intermediary;
 use approx_eq::assert_approx_eq;
 use crate::linalg_util::outer;
-use ndarray::{arr1, Array1, Axis, Array2};
+use ndarray::{arr1, Array1, Axis, Array2, s};
 
 #[derive(Debug)]
 pub struct Network {
@@ -83,19 +83,28 @@ impl Network {
                 }
         }
 
-        println!("Intermediaries: {:#?}", intermediaries);
+        //println!("Intermediaries: {:#?}", intermediaries);
         return (x, intermediaries);
     }
-    fn backward(mut self, x: Array1<f32>, y_true: Array1<f32>) {
+    fn backward(&mut self, x: Array1<f32>, y_true: Array1<f32>) {
         let (y_pred, intermediaries) = self.forward(x, true);
         self.update_weights(y_true, y_pred, intermediaries);
 
     }
-    fn update_weights(mut self, y_true: Array1<f32>, y_pred: Array1<f32>, mut intermediaries: Vec<Intermediary>){
+    fn update_weights(&mut self, y_true: Array1<f32>, y_pred: Array1<f32>, mut intermediaries: Vec<Intermediary>){
+        
         let dis = self.get_dis(&intermediaries, y_true);
         let deltas = self.get_deltas(intermediaries, dis);
 
+        for (layer_num, layer) in self._layers.iter_mut().enumerate(){
+            let layer_deltas = &deltas[layer_num];
+            for (neuron_num,neuron) in layer.iter_mut().enumerate(){
+                
+                let weights_update = self.learning_rate* neuron.weights.dot(&layer_deltas. index_axis(Axis(0), neuron_num));
+                neuron.weights -= weights_update;
+            }
 
+        }
 
 
 
@@ -113,7 +122,6 @@ impl Network {
             }
             else{
                 let layer =&self._layers[self._layers.len()-(layer_num)];
-                println!("layer: {:#?}", layer);
                 for (neuron_num, neuron) in layer.iter().enumerate(){
                     let zl = intermediary.z[neuron_num];
                     let di_l = &dis[dis.len()-1];
@@ -128,16 +136,11 @@ impl Network {
         return dis;
     }
     fn get_deltas(&self, intermediaries: Vec<Intermediary>, dis: Vec<Array1<f32>>) -> Vec<Array2<f32>>{
-        println!("dis: {:?}", dis);
         let mut deltas: Vec<Array2<f32>> = Vec::new();
         let mut delta: Array2<f32>;
-        println!("intermediaries: {:?}", intermediaries);
         for (l, di) in dis.iter().rev().enumerate(){
-            println!("di: {:?}", di);
             let intermediary = intermediaries[l].o.clone();
-            println!("intermediary: {:?}", intermediary.clone().insert_axis(Axis(1)));
             delta = outer(&di, &intermediary);
-            println!("delta: {}", delta);
             deltas.push(delta);
         }
         return deltas;
@@ -170,8 +173,21 @@ fn test_forward_intermediaries(){
 
 # [test]
 fn test_backward(){
-    let mut network = Network::new(2,2,1,0.5);
+    let mut network = Network::new(2,2,1,1.0);
     println!("network: {:#?}", network);
     network.backward(arr1(&[-2.0,-1.0]),arr1(&[1.0]));
 
+}
+
+
+#[test]
+fn test_learns(){
+    let mut network = Network::new(2,2,1,0.5);
+    for _ in 0..50{
+        network.backward(arr1(&[-2.0, -1.0]), arr1(&[1.0]));
+        let outputs = network.forward(arr1(&[-2.0,-1.0]), false).0;
+        let loss = network.loss.call(&outputs, &arr1(&[1.0]));
+        println!("output: {}", outputs);
+        println!("loss: {}", loss);
+    }
 }
